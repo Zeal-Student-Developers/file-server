@@ -5,7 +5,7 @@ const app = express();
 app.use(express.json());
 
 // Use 'public' folder for serving images
-app.use("/public/images", express.static("public"));
+app.use("/public", express.static("public"));
 
 app.use("/image", require("./routes/file"));
 
