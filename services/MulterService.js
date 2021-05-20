@@ -9,13 +9,32 @@ const IMAGE_DESTINATION = "./public/images";
 
 const storage = multer.diskStorage({
   destination: IMAGE_DESTINATION,
-  filename: (req, file, cb) => {
-    cb(null, getFileName(file.originalname, req.body.userId));
+  filename: ({ body }, file, cb) => {
+    if (!body.userId) {
+      return cb(
+        { code: "BAD_REQUEST", message: "Please provide a userId" },
+        null
+      );
+    }
+
+    cb(null, getFileName(file.originalname, body.userId));
   },
 });
 
 const saveFiles = multer({
   storage: storage,
+  fileFilter: (_, { originalname, mimetype }, cb) => {
+    const allowedFileTypes = /jpeg|jpg|png|gif/;
+
+    const hasValidExtension = allowedFileTypes.test(extname(originalname));
+    const hasValidMimetype = allowedFileTypes.test(mimetype);
+
+    if (hasValidExtension && hasValidMimetype) {
+      return cb(null, true);
+    }
+
+    return cb({ message: "Please provide image files only" }, false);
+  },
 }).array("images", MAX_IMAGE_COUNT);
 
 /**
