@@ -1,11 +1,12 @@
 const express = require("express");
+require("dotenv").config();
 
 const app = express();
 
 app.use(express.json());
 
 // Use 'public' folder for serving images
-app.use("/public", express.static("public"));
+app.use("/public", express.static(__dirname + '/public'));
 
 app.use("/image", require("./routes/file"));
 
